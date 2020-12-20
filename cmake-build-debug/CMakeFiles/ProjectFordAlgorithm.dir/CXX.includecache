@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+E:/0_BSUIR/1/OsnovuAlgoritmizatsii/ProjectFordAlgorithm/main.cpp
+iostream
+-
+fstream
+-
+string
+-
+ctime
+-
+
