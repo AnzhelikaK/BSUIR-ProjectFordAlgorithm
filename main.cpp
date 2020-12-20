@@ -49,7 +49,7 @@ int main() {
     // the number of prices (it means, that some cities have connection between them and ticket exists)
     int pricesNumber = 0;
 
-    // cycle for inserting prices of tickets between different cities, if cities have price between them
+    // cycle for inserting prices of tickets between different cities, if cities have way between them
     for (int i = 0; i < cities; i++) {
         for (int j = i + 1; j < cities; j++) {
             label:
@@ -57,7 +57,7 @@ int main() {
             printf("\nCost of ticket between %s(%d)-%s(%d):", names[i].c_str(), i + 1, names[j].c_str(), j + 1);
             scanf("%d", &price);
             if (price < 0) {
-                printf("Please insert the positive value of ticket's price\n");
+                printf("Please insert the positive value of ticket's way\n");
                 goto label;
             }
             if (price != 0) {
@@ -75,7 +75,7 @@ int main() {
     int start = insertNumber("start city");
     int begin = start - 1;
 
-    // the min price form start-city to each cities
+    // the min way form start-city to each cities
     auto *minPrice = createArrayWithDefault(cities);
 
     // Begin of Bellman Ford's Algorithm
@@ -102,12 +102,12 @@ int main() {
     file << "\nFinish city is " << names[end] << "\n";
 
     // array of cities, from which the cheapest way consist of
-    int price[cities];
+    int way[cities];
 
     // first element is the finish-city
-    price[0] = finish;
+    way[0] = finish;
 
-    //Code for finding fully optimal price, which uses calculated data of min price by Ford's Algorithm
+    //Code for finding fully optimal way, which uses calculated data of min way by Ford's Algorithm
     // k - counter of steps
     int k = 1;
     int reversePrice = minPrice[end];
@@ -123,7 +123,7 @@ int main() {
                     if (temp == minPrice[i]) {
                         reversePrice = temp;
                         end = firstCity;
-                        price[k] = i + 1;
+                        way[k] = i + 1;
                         k++;
                     }
                 } else if (firstCity == end && cost != 0) {
@@ -131,7 +131,7 @@ int main() {
                     if (temp == minPrice[i]) {
                         reversePrice = temp;
                         end = secondCity;
-                        price[k] = i + 1;
+                        way[k] = i + 1;
                         k++;
                     }
                 }
@@ -139,7 +139,7 @@ int main() {
         }
     }
 
-    printOptimalPrice(names, price, k, file);
+    printOptimalPrice(names, way, k, file);
 
     delete[] names;
     return 0;
