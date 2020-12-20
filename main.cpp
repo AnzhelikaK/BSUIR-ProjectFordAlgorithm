@@ -2,25 +2,27 @@
 #include <fstream>
 #include <string>
 #include <ctime>
+#include <iomanip>
 
 using namespace std;
 
 struct Price {
-    int x, y, cost;
+    int x, y;
+    double cost;
 };
 
-const static int INF = 1000000;
+const static double INF = 1000000.00;
 const static int LENGTH_OF_FILE_NAME = 42;
 
 int insertNumber(const char *text);
 
 string *insertNamesOfCities(int cities);
 
-int *createArrayWithDefault(int cities);
+double *createArrayWithDefault(int cities);
 
-void printMinPricesForChosenCity(string *names, int *minPrices, int cities, int begin, ofstream &file);
+void printMinPricesForChosenCity(string *names, double *minPrices, int cities, int begin, ofstream &file);
 
-void printOptimalPrice(const string *names, const int *price, int k, ofstream &file);
+void printOptimalWay(const string *names, const int *way, int k, ofstream &file);
 
 int main() {
     // the number of nods
@@ -53,19 +55,18 @@ int main() {
     for (int i = 0; i < cities; i++) {
         for (int j = i + 1; j < cities; j++) {
             label:
-            int price;
+            double price;
             printf("\nCost of ticket between %s(%d)-%s(%d):", names[i].c_str(), i + 1, names[j].c_str(), j + 1);
-            scanf("%d", &price);
+            scanf("%lf", &price);
             if (price < 0) {
-                printf("Please insert the positive value of ticket's way\n");
+                printf("Please insert the positive value of ticket's price\n");
                 goto label;
             }
             if (price != 0) {
                 prices[pricesNumber].x = i;
                 prices[pricesNumber].y = j;
                 prices[pricesNumber].cost = price;
-                file << "Cost of ticket between " << names[i].c_str() << "-" << names[j].c_str() << " " << price
-                     << "\n";
+                file << "Cost of ticket between " << names[i].c_str() << "-" << names[j].c_str() << " " << fixed << setprecision(2) << price << "\n";
                 pricesNumber++;
             }
         }
@@ -78,22 +79,22 @@ int main() {
     // the min way form start-city to each cities
     auto *minPrice = createArrayWithDefault(cities);
 
-    // Begin of Bellman Ford's Algorithm
+    // begin of Bellman-Ford's algorithm
     minPrice[begin] = 0;
     for (int i = 0; i < cities - 1; i++) {
         for (int j = 0; j < pricesNumber; j++) {
             int firstCity = prices[j].x;
             int secondCity = prices[j].y;
-            int road = prices[j].cost;
+            double cost = prices[j].cost;
 
-            if (minPrice[firstCity] + road < minPrice[secondCity]) {
-                minPrice[secondCity] = minPrice[firstCity] + road;
-            } else if (minPrice[secondCity] + road < minPrice[firstCity]) {
-                minPrice[firstCity] = minPrice[secondCity] + road;
+            if (minPrice[firstCity] + cost < minPrice[secondCity]) {
+                minPrice[secondCity] = minPrice[firstCity] + cost;
+            } else if (minPrice[secondCity] + cost < minPrice[firstCity]) {
+                minPrice[firstCity] = minPrice[secondCity] + cost;
             }
         }
     }
-    // End of Bellman Ford's Algorithm
+    // end of Bellman-Ford's algorithm
     printMinPricesForChosenCity(names, minPrice, cities, begin, file);
 
     // number of finish-city
@@ -107,28 +108,28 @@ int main() {
     // first element is the finish-city
     way[0] = finish;
 
-    //Code for finding fully optimal way, which uses calculated data of min way by Ford's Algorithm
+    // code for finding fully optimal way, which uses calculated data of min way by Ford's Algorithm
     // k - counter of steps
     int k = 1;
-    int reversePrice = minPrice[end];
+    double reversePrice = minPrice[end];
     while (end != begin) {
         for (int i = 0; i < cities; ++i) {
             for (int j = 0; j < pricesNumber; ++j) {
                 int firstCity = prices[j].x;
                 int secondCity = prices[j].y;
-                int cost = prices[j].cost;
+                double cost = prices[j].cost;
 
                 if (secondCity == end && cost != 0) {
-                    int temp = reversePrice - cost;
-                    if (temp == minPrice[i]) {
+                    double temp = reversePrice - cost;
+                    if (abs(temp - minPrice[i]) < 0.000001) {
                         reversePrice = temp;
                         end = firstCity;
                         way[k] = i + 1;
                         k++;
                     }
                 } else if (firstCity == end && cost != 0) {
-                    int temp = reversePrice - cost;
-                    if (temp == minPrice[i]) {
+                    double temp = reversePrice - cost;
+                    if (abs(temp - minPrice[i]) < 0.000001) {
                         reversePrice = temp;
                         end = secondCity;
                         way[k] = i + 1;
@@ -139,7 +140,7 @@ int main() {
         }
     }
 
-    printOptimalPrice(names, way, k, file);
+    printOptimalWay(names, way, k, file);
 
     delete[] names;
     return 0;
@@ -170,33 +171,33 @@ string *insertNamesOfCities(int cities) {
     return names;
 }
 
-int *createArrayWithDefault(int cities) {
-    int *arr = new int[cities];
+double *createArrayWithDefault(int cities) {
+    auto *arr = new double[cities];
     for (int i = 0; i < cities; i++) {
         arr[i] = INF;
     }
     return arr;
 }
 
-void printMinPricesForChosenCity(string *names, int *minPrices, int cities, int begin, ofstream &file) {
+void printMinPricesForChosenCity(string *names, double *minPrices, int cities, int begin, ofstream &file) {
     printf("The min price of tickets form start-city to each city:\n");
     file << "\nStart city is " << names[begin] << "\n\nThe min distance form start-city to each city:\n";
     for (int i = 0; i < cities; i++) {
-        if (minPrices[i] == INF) {
-            printf("%s(%d) -> %s(%d) = %d\n", names[begin].c_str(), begin + 1, names[i].c_str(), i + 1, INF);
-            file << names[begin].c_str() << "-" << names[i].c_str() << " = " << INF << "\n";
+        if ((abs(minPrices[i] - INF) < 0.000001)) {
+            printf("%s(%d) -> %s(%d) = %.2lf\n", names[begin].c_str(), begin + 1, names[i].c_str(), i + 1, INF);
+            file << names[begin].c_str() << "-" << names[i].c_str() << " = " << fixed << setprecision(2) << INF << "\n";
         } else {
-            printf("%s(%d) -> %s(%d) = %d\n", names[begin].c_str(), begin + 1, names[i].c_str(), i + 1, minPrices[i]);
-            file << names[begin].c_str() << "-" << names[i].c_str() << " = " << minPrices[i] << "\n";
+            printf("%s(%d) -> %s(%d) = %.2lf\n", names[begin].c_str(), begin + 1, names[i].c_str(), i + 1, minPrices[i]);
+            file << names[begin].c_str() << "-" << names[i].c_str() << " = " << fixed << setprecision(2) << minPrices[i] << "\n";
         }
     }
 }
 
-void printOptimalPrice(const string *names, const int *price, int k, ofstream &file) {
-    printf("\nOptimal price: start -> ");
-    file << "\nOptimal price: start -> ";
+void printOptimalWay(const string *names, const int *way, int k, ofstream &file) {
+    printf("\nOptimal way: start -> ");
+    file << "\nOptimal way: start -> ";
     for (int i = k - 1; i >= 0; i--) {
-        int numberOfCity = price[i] - 1;
+        int numberOfCity = way[i] - 1;
         printf("%s -> ", names[numberOfCity].c_str());
         file << names[numberOfCity].c_str() << " -> ";
     }
