@@ -13,6 +13,7 @@ struct Price {
 
 const static double INF = 1000000.00;
 const static int LENGTH_OF_FILE_NAME = 42;
+const static double DOUBLE_ZERO = 0.00000001;
 
 int insertNumber(const char *text);
 
@@ -66,7 +67,8 @@ int main() {
                 prices[pricesNumber].x = i;
                 prices[pricesNumber].y = j;
                 prices[pricesNumber].cost = price;
-                file << "Cost of ticket between " << names[i].c_str() << "-" << names[j].c_str() << " " << fixed << setprecision(2) << price << "\n";
+                file << "Cost of ticket between " << names[i].c_str() << "-" << names[j].c_str() << " " << fixed
+                     << setprecision(2) << price << "\n";
                 pricesNumber++;
             }
         }
@@ -121,7 +123,7 @@ int main() {
 
                 if (secondCity == end && cost != 0) {
                     double temp = reversePrice - cost;
-                    if (abs(temp - minPrice[i]) < 0.000001) {
+                    if (abs(temp - minPrice[i]) < DOUBLE_ZERO) {
                         reversePrice = temp;
                         end = firstCity;
                         way[k] = i + 1;
@@ -129,7 +131,7 @@ int main() {
                     }
                 } else if (firstCity == end && cost != 0) {
                     double temp = reversePrice - cost;
-                    if (abs(temp - minPrice[i]) < 0.000001) {
+                    if (abs(temp - minPrice[i]) < DOUBLE_ZERO) {
                         reversePrice = temp;
                         end = secondCity;
                         way[k] = i + 1;
@@ -183,12 +185,14 @@ void printMinPricesForChosenCity(string *names, double *minPrices, int cities, i
     printf("The min price of tickets form start-city to each city:\n");
     file << "\nStart city is " << names[begin] << "\n\nThe min distance form start-city to each city:\n";
     for (int i = 0; i < cities; i++) {
-        if ((abs(minPrices[i] - INF) < 0.000001)) {
+        if ((abs(minPrices[i] - INF) < DOUBLE_ZERO)) {
             printf("%s(%d) -> %s(%d) = %.2lf\n", names[begin].c_str(), begin + 1, names[i].c_str(), i + 1, INF);
             file << names[begin].c_str() << "-" << names[i].c_str() << " = " << fixed << setprecision(2) << INF << "\n";
         } else {
-            printf("%s(%d) -> %s(%d) = %.2lf\n", names[begin].c_str(), begin + 1, names[i].c_str(), i + 1, minPrices[i]);
-            file << names[begin].c_str() << "-" << names[i].c_str() << " = " << fixed << setprecision(2) << minPrices[i] << "\n";
+            printf("%s(%d) -> %s(%d) = %.2lf\n", names[begin].c_str(), begin + 1, names[i].c_str(), i + 1,
+                   minPrices[i]);
+            file << names[begin].c_str() << "-" << names[i].c_str() << " = " << fixed << setprecision(2) << minPrices[i]
+                 << "\n";
         }
     }
 }
