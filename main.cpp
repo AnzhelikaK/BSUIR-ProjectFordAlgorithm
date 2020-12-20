@@ -47,7 +47,7 @@ int main() {
     }
 
     // the number of prices (it means, that some cities have connection between them and ticket exists)
-    int citiesNumber = 0;
+    int pricesNumber = 0;
 
     // cycle for inserting prices of tickets between different cities, if cities have price between them
     for (int i = 0; i < cities; i++) {
@@ -61,12 +61,12 @@ int main() {
                 goto label;
             }
             if (price != 0) {
-                prices[citiesNumber].x = i;
-                prices[citiesNumber].y = j;
-                prices[citiesNumber].cost = price;
+                prices[pricesNumber].x = i;
+                prices[pricesNumber].y = j;
+                prices[pricesNumber].cost = price;
                 file << "Cost of ticket between " << names[i].c_str() << "-" << names[j].c_str() << " " << price
                      << "\n";
-                citiesNumber++;
+                pricesNumber++;
             }
         }
     }
@@ -81,7 +81,7 @@ int main() {
     // Begin of Bellman Ford's Algorithm
     minPrice[begin] = 0;
     for (int i = 0; i < cities - 1; i++) {
-        for (int j = 0; j < citiesNumber; j++) {
+        for (int j = 0; j < pricesNumber; j++) {
             int firstCity = prices[j].x;
             int secondCity = prices[j].y;
             int road = prices[j].cost;
@@ -113,7 +113,7 @@ int main() {
     int reversePrice = minPrice[end];
     while (end != begin) {
         for (int i = 0; i < cities; ++i) {
-            for (int j = 0; j < citiesNumber; ++j) {
+            for (int j = 0; j < pricesNumber; ++j) {
                 int firstCity = prices[j].x;
                 int secondCity = prices[j].y;
                 int cost = prices[j].cost;
