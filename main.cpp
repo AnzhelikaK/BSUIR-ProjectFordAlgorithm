@@ -147,7 +147,7 @@ int main() {
 
     printOptimalWay(names, way, k, file);
 
-   // Logic for next behavior of program
+    // logic for next behavior of program
     int answer;
     printf("\nWould you like to continue? "
            "\nIf you want to insert new map of cities - chose 1;"
@@ -166,7 +166,6 @@ int main() {
             file.close();
             return 0;
     }
-
 }
 
 int insertNumber(const char *text) {
