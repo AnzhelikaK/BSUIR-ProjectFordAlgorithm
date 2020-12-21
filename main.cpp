@@ -147,7 +147,7 @@ int main() {
 
     printOptimalWay(names, way, k, file);
 
-   // Logic for next behavior of programm
+   // Logic for next behavior of program
     int answer;
     printf("\nWould you like to continue? "
            "\nIf you want to insert new map of cities - chose 1;"
