@@ -17,6 +17,8 @@ const static double DOUBLE_ZERO = 0.00000001;
 
 int insertNumber(const char *text);
 
+int insertStartOrFinishCity(const char *text, int cities);
+
 string *insertNamesOfCities(int cities);
 
 double *createArrayWithDefault(int cities);
@@ -27,6 +29,7 @@ void printOptimalWay(const string *names, const int *way, int k, ofstream &file)
 
 int main() {
     // the number of nods
+    newGraph:
     auto cities = insertNumber("cities");
 
     // array for edges
@@ -73,9 +76,9 @@ int main() {
             }
         }
     }
-
+    newWay:
     // number of start-city
-    int start = insertNumber("start city");
+    int start = insertStartOrFinishCity("start city", cities);
     int begin = start - 1;
 
     // the min way form start-city to each cities
@@ -100,7 +103,7 @@ int main() {
     printMinPricesForChosenCity(names, minPrice, cities, begin, file);
 
     // number of finish-city
-    int finish = insertNumber("finish city");
+    int finish = insertStartOrFinishCity("finish city", cities);
     int end = finish - 1;
     file << "\nFinish city is " << names[end] << "\n";
 
@@ -144,19 +147,50 @@ int main() {
 
     printOptimalWay(names, way, k, file);
 
-    delete[] names;
-    return 0;
+   // Logic for next behavior of programm
+    int answer;
+    printf("\nWould you like to continue? "
+           "\nIf you want to insert new map of cities - chose 1;"
+           "\nIf you want to calculate another way and start from another city - chose 2;"
+           "\nIf you want to exit - chose 3."
+           "\nYour answer: ");
+    scanf("%d", &answer);
+    switch (answer) {
+        case 1:
+            delete[] names;
+            goto newGraph;
+        case 2:
+            goto newWay;
+        default:
+            delete[] names;
+            file.close();
+            return 0;
+    }
+
 }
 
 int insertNumber(const char *text) {
-    label:
+    label1:
     int number;
     printf("\nInsert the number of %s:", text);
     scanf("%d", &number);
     cin.ignore();
     if (number <= 0) {
         printf("Wrong number\n");
-        goto label;
+        goto label1;
+    }
+    return number;
+}
+
+int insertStartOrFinishCity(const char *text, int cities) {
+    label2:
+    int number;
+    printf("\nInsert the number of %s:", text);
+    scanf("%d", &number);
+    cin.ignore();
+    if (number <= 0 || number > cities) {
+        printf("Wrong number of city. Number of city should be > 0 and < count all cities.\n");
+        goto label2;
     }
     return number;
 }
