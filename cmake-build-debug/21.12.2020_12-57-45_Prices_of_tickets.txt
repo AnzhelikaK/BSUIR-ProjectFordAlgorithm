@@ -1,0 +1,14 @@
+Cost of ticket between Minsk-Vilnius 10.99
+Cost of ticket between Minsk-Barselona 300.00
+Cost of ticket between Vilnius-Barselona 40.35
+
+Start city is Minsk
+
+The min distance form start-city to each city:
+Minsk-Minsk = 0.00
+Minsk-Vilnius = 10.99
+Minsk-Barselona = 51.34
+
+Finish city is Barselona
+
+Optimal way: start -> Minsk -> Vilnius -> Barselona -> finish
