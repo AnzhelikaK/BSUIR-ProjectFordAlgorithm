@@ -6,13 +6,14 @@
 
 using namespace std;
 
-struct Price {
+struct Ticket {
     int x, y;
     double cost;
 };
 
 const static double INF = 1000000.00;
 const static int LENGTH_OF_FILE_NAME = 42;
+const static int MAX_LENGTH_OF_CITY_NAME = 35;
 const static double DOUBLE_ZERO = 0.00000001;
 
 int insertNumber(const char *text);
@@ -28,18 +29,18 @@ void printMinPricesForChosenCity(string *names, double *minPrices, int cities, i
 void printOptimalWay(const string *names, const int *way, int k, ofstream &file);
 
 int main() {
-    // the number of nods
+    // the number of cities (nods of graph)
     newGraph:
     auto cities = insertNumber("cities");
 
-    // array for edges
-    // max number of edges = nodes * (nodes - 1) / 2
-    Price prices[(cities * (cities - 1) / 2)];
+    // array of tickets between cities
+    // max count of elements = nodes * (nodes - 1) / 2
+    Ticket tickets[(cities * (cities - 1) / 2)];
 
-    // names for cities-nodes
+    // insert names for cities-nodes
     auto *names = insertNamesOfCities(cities);
 
-    // this code creates name of file based on local time.
+    // this code creates name of file based on local time
     char timeStr[LENGTH_OF_FILE_NAME];
     time_t rawTime;
     struct tm *timeInfo;
@@ -52,8 +53,8 @@ int main() {
         return 1;
     }
 
-    // the number of prices (it means, that some cities have connection between them and ticket exists)
-    int pricesNumber = 0;
+    // the common number of tickets in array of all Tickets (it means, that some cities have connection between them and ticket exists)
+    int numberOfTicket = 0;
 
     // cycle for inserting prices of tickets between different cities, if cities have way between them
     for (int i = 0; i < cities; i++) {
@@ -67,12 +68,12 @@ int main() {
                 goto label;
             }
             if (price != 0) {
-                prices[pricesNumber].x = i;
-                prices[pricesNumber].y = j;
-                prices[pricesNumber].cost = price;
+                tickets[numberOfTicket].x = i;
+                tickets[numberOfTicket].y = j;
+                tickets[numberOfTicket].cost = price;
                 file << "Cost of ticket between " << names[i].c_str() << "-" << names[j].c_str() << " " << fixed
                      << setprecision(2) << price << "\n";
-                pricesNumber++;
+                numberOfTicket++;
             }
         }
     }
@@ -81,16 +82,15 @@ int main() {
     int start = insertStartOrFinishCity("start city", cities);
     int begin = start - 1;
 
-    // the min way form start-city to each cities
+    // the min way from start-city to each cities, which based on min price of tickets
     auto *minPrice = createArrayWithDefault(cities);
-
     // begin of Bellman-Ford's algorithm
     minPrice[begin] = 0;
     for (int i = 0; i < cities - 1; i++) {
-        for (int j = 0; j < pricesNumber; j++) {
-            int firstCity = prices[j].x;
-            int secondCity = prices[j].y;
-            double cost = prices[j].cost;
+        for (int j = 0; j < numberOfTicket; j++) {
+            int firstCity = tickets[j].x;
+            int secondCity = tickets[j].y;
+            double cost = tickets[j].cost;
 
             if (minPrice[firstCity] + cost < minPrice[secondCity]) {
                 minPrice[secondCity] = minPrice[firstCity] + cost;
@@ -113,16 +113,16 @@ int main() {
     // first element is the finish-city
     way[0] = finish;
 
-    // code for finding fully optimal way, which uses calculated data of min way by Ford's Algorithm
+    // code for finding optimal way, which uses calculated data of min way by Ford's Algorithm
     // k - counter of steps
     int k = 1;
     double reversePrice = minPrice[end];
     while (end != begin) {
         for (int i = 0; i < cities; ++i) {
-            for (int j = 0; j < pricesNumber; ++j) {
-                int firstCity = prices[j].x;
-                int secondCity = prices[j].y;
-                double cost = prices[j].cost;
+            for (int j = 0; j < numberOfTicket; ++j) {
+                int firstCity = tickets[j].x;
+                int secondCity = tickets[j].y;
+                double cost = tickets[j].cost;
 
                 if (secondCity == end && cost != 0) {
                     double temp = reversePrice - cost;
@@ -196,11 +196,11 @@ int insertStartOrFinishCity(const char *text, int cities) {
 
 string *insertNamesOfCities(int cities) {
     auto *names = new string[cities];
-    char buf[35];
+    char buf[MAX_LENGTH_OF_CITY_NAME];
     printf("Insert names of cities:\n");
     for (int i = 0; i < cities; ++i) {
         printf("City #%d:", i + 1);
-        cin.getline(buf, 35, '\n');
+        cin.getline(buf, MAX_LENGTH_OF_CITY_NAME, '\n');
         names[i] = buf;
     }
     return names;
